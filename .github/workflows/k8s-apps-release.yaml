@@ -12,6 +12,12 @@ env:
 jobs:
     deploy:
         name: DeployApps
+        permissions:
+          contents: read
+          issues: read
+          checks: write
+          pull-requests: write
+          id-token: write
         runs-on: ubuntu-latest
         environment: Dev
         steps:
@@ -22,16 +28,22 @@ jobs:
             - name: Authenticate with Google Cloud
               uses: 'google-github-actions/auth@v2'
               with:
-                project_id: ${{ secrets.PROJECT_ID }}
                 workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITYPROVIDER }}
-                credentials_json:  ${{ secrets.GCP_CREDENTIALS }}
+                service_account: ${{ secrets.SERVICE_ACCOUNT }}
         
             - name: Configure kubectl
-              uses: google-github-actions/setup-gcloud@v0
+              uses: google-github-actions/setup-gcloud@v2
               with:
                 project_id: ${{ secrets.PROJECT_ID }}
-                service_account_key: ${{ secrets.GKE_SA_KEY }}
     
+            - name: Cluster Connection
+              run: |
+                gcloud components install gke-gcloud-auth-plugin
+                export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+                gcloud container clusters get-credentials cohere-main-gke --region=us-central1
+                kubectl config get-contexts
+                kubectl config current-context
+
             - name: Deploy App w Database
               run: |
                 kubectl apply -f manifests/cohere-app.yaml

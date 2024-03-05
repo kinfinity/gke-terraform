@@ -27,7 +27,7 @@ terraform workspace list
 terraform workspace select $WORKSPACE
 
 echo "configured workspace: ${ENV_NAME}/${WORKSPACE}"
-
+ls
 #  Run the provided command (e.g., plan or apply) with .tfvars
 if [[ $TERRAFORM_CMD == *"plan"* ]]; then
     terraform $TERRAFORM_CMD -var-file=variables.tfvars
