@@ -6,4 +6,4 @@ variable "project_id"{}
 variable "env_name" {}
 variable "network"{}
 variable "subnetwork" {}
-variable "credentials_path" {}
+# variable "credentials_path" {}

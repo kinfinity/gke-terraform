@@ -6,7 +6,7 @@ set -eu
 USAGE="USAGE:
 ${0} <terraform-env-directory> <project-id> <env-name>"
 
-if [[ $# < 4 ]]; then
+if [[ $# -ne 3 ]]; then
     echo "${USAGE}" >&2
     exit 1
 fi
@@ -20,8 +20,8 @@ cat > variables.tfvars << EOF
     main_region                 =   "us-central1"
     gke_name                    =   "cohere-main-gke"
     gke_node_count              =   2
-    project_id                  =   ${2}
-    env_name                    =   ${3}
+    project_id                  =   "${2}"
+    env_name                    =   "${3}"
     network                     =   "default"
     subnetwork                  =   "default"
 EOF
