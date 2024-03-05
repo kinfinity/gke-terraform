@@ -12,6 +12,12 @@ env:
 jobs:
     deploy:
         name: DeployApps
+        permissions:
+          contents: read
+          issues: read
+          checks: write
+          pull-requests: write
+          id-token: 'write'
         runs-on: ubuntu-latest
         environment: Dev
         steps:
@@ -22,9 +28,8 @@ jobs:
             - name: Authenticate with Google Cloud
               uses: 'google-github-actions/auth@v2'
               with:
-                project_id: ${{ secrets.PROJECT_ID }}
                 workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITYPROVIDER }}
-                credentials_json:  ${{ secrets.GCP_CREDENTIALS }}
+                service_account: ${{ secrets.SERVICE_ACCOUNT }}
         
             - name: Configure kubectl
               uses: google-github-actions/setup-gcloud@v0
