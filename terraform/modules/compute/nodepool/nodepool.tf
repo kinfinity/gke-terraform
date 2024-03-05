@@ -15,6 +15,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     node_locations = var.node_locations
 
     node_config {
+        image_type = "COS_CONTAINERD"
         preemptible  = true
         machine_type = "e2-medium"
         disk_size_gb = 50

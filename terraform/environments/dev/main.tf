@@ -56,7 +56,7 @@ module "cohere-gke-pool-master" {
   depends_on    = [module.cohere-gke]
 
   source        = "../../modules/compute/nodepool"
-  name          = "${module.cohere-gke.name}-np1"
+  name          = "${module.cohere-gke.name}-np"
   cluster_id  = module.cohere-gke.id
   region        = module.cohere-gke.location
   max_nodes     = var.gke_node_count
@@ -89,11 +89,6 @@ provider "helm" {
     token                  = data.google_client_config.default.access_token
   }
 }
-provider "kubectl" {
-  host                   = "https://${module.cohere-gke.endpoint}"
-  cluster_ca_certificate = base64decode(module.cohere-gke.cluster_ca_certificate)
-  token                  = data.google_client_config.default.access_token
-}
 
 # Static IP
 resource "google_compute_address" "ingress_ip_address" {
@@ -101,13 +96,22 @@ resource "google_compute_address" "ingress_ip_address" {
 }
 
 # setup ingress
+# https://github.com/terraform-iaac/terraform-helm-nginx-controller
 module "nginx-controller" {
   source  = "terraform-iaac/nginx-controller/helm"
 
   # Optional
-  ip_address = google_compute_address.ingress_ip_address.address
+  ip_address          = google_compute_address.ingress_ip_address.address
+  namespace           =  "ingress"
+  ingress_class_name  =  "nginx"
 }
 
 output "gke_endpoint" {
   value = "${element(split(",", module.cohere-gke.endpoint), 0)}"
 }
+
+output "ingress_class" {
+  value = "${module.nginx-controller.ingress_class_name}"
+}
+
+
