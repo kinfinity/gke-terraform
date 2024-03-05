@@ -32,3 +32,47 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+
+# Node.js
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Logs
+logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js cache files
+.cache/
+
+# yarn
+yarn-error.log
+.pnp/
+.yarn/
+yarn.lock
+
+# npm
+npm-debug.log*
