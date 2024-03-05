@@ -36,8 +36,15 @@ jobs:
               with:
                 project_id: ${{ secrets.PROJECT_ID }}
     
+            - name: Cluster Connection
+              run: |
+                gcloud components install gke-gcloud-auth-plugin
+                export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+                gcloud container clusters get-credentials cohere-main-gke --region=us-central1
+                kubectl config get-contexts
+                kubectl config current-context
+
             - name: Deploy App w Database
               run: |
-                kubectl config current-context
                 kubectl apply -f manifests/cohere-app.yaml
                 kubectl apply -f manifests/postgress.yaml
