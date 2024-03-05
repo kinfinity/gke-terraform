@@ -1,0 +1,58 @@
+name: Infra Release
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+
+jobs:
+  terraform-release:
+    name: "Terraform Release"
+    runs-on: ubuntu-latest
+    environment: Dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Terraform
+        env:
+          TERRAFORM_VERSION: "1.7.4"
+        run: |
+          tf_version=$TERRAFORM_VERSION
+          wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
+          
+          # Check if the terraform directory exists before deleting
+          if [ -d "/usr/local/bin/terraform" ]; then
+            sudo rm -rf /usr/local/bin/terraform
+          fi
+
+          # Check if the extracted directory exists before deleting
+          if [ -d "terraform" ]; then
+            sudo rm -rf terraform
+          fi
+
+          sudo unzip -o terraform_"$tf_version"_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+
+      - name: Verify Terraform version
+        run: terraform --version
+        
+      #   https://github.com/google-github-actions/auth
+      - name: Authenticate with Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITYPROVIDER }}
+          credentials_json:  ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Terraform Plan
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          chmod +x ci/scripts/*.sh
+          python ci/scripts/execute-terraform.py  --config ci/configs/pipeline-config.json --command plan --env dev
+
+      - name: Terraform Apply
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          chmod +x ci/scripts/*.sh
+          python ci/scripts/execute-terraform.py  --config ci/configs/pipeline-config.json --command apply --env dev
