@@ -13,25 +13,24 @@ This project aims to deploy a Kubernetes cluster on Google Cloud Platform (GCP) 
 ├── terraform/
 │   ├── environments
 │   |   └── dev
-│   |       ├── outputs.tf
-│   |       ├── outputs.tf
-│   |       ├── outputs.tf
-│   |       └── outputs.tf
+│   |       ├── main.tf
+│   |       ├── provider.tf
+│   |       ├── variables.tf
+│   |       ├── state.tf
+│   |       └── versions.tf
 │   └── modules
-├── kubernetes/
-│   ├── nextjs-app.yaml
-│   ├── postgresql.yaml       # Optional
-│   └── ...
-├── nextjs-app/
+├── manifests/
+│   ├── cohere-app.yaml
+│   └── postgress.yaml
+├── ci/
+│   ├── configs
+│   └── scripts   
+├── app/
 │   ├── Dockerfile
-│   ├── package.json
-│   ├── pages/
-│   │   └── index.js
-│   └── ...
-├── postgresql/
-│   ├── Dockerfile            # Optional
-│   ├── postgresql-init.sql   # Optional
-│   └── ...
+│   └── cohere-app
+│       ├── package.json 
+│       ├── package-lock.json
+│       └── ...
 ├── README.md
 └── ...
 ```
