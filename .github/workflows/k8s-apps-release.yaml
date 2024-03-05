@@ -1,0 +1,38 @@
+name: K8s_Apps
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+env:
+  IMAGE_TAG: $(echo ${{ github.sha }} | cut -c1-4)
+  NODE_VERSION: 20.11.1
+
+jobs:
+    deploy:
+        name: DeployApps
+        runs-on: ubuntu-latest
+        environment: Dev
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+        
+            #   https://github.com/google-github-actions/auth
+            - name: Authenticate with Google Cloud
+              uses: 'google-github-actions/auth@v2'
+              with:
+                project_id: ${{ secrets.PROJECT_ID }}
+                workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITYPROVIDER }}
+                credentials_json:  ${{ secrets.GCP_CREDENTIALS }}
+        
+            - name: Configure kubectl
+              uses: google-github-actions/setup-gcloud@v0
+              with:
+                project_id: ${{ secrets.PROJECT_ID }}
+                service_account_key: ${{ secrets.GKE_SA_KEY }}
+    
+            - name: Deploy App w Database
+              run: |
+                kubectl apply -f manifests/cohere-app.yaml
+                kubectl apply -f manifests/postgress.yaml

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cohere-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cohere-app
+  template:
+    metadata:
+      labels:
+        app: cohere-app
+    spec:
+      imagePullSecrets:
+        - name: gcr-json-key #
+      containers:
+        - name: cohere-app-container
+          image: gcr.io/circular-genius-416217/cohere-app:v1
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cohere-app-service
+spec:
+  selector:
+    app: cohere-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cohere-app-ingress
+spec:
+  ingressClassName: "nginx"
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cohere-app-service
+                port:
+                  number: 3000
