@@ -61,4 +61,5 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         run: |
           chmod +x ci/scripts/*.sh
+          ci/scripts/generate_tfvars.sh terraform/environments/dev ${{ secrets.PROJECT_ID }} dev
           python3 ci/scripts/execute-terraform.py  --config ci/configs/pipeline-config.json --command apply --env dev
