@@ -1,0 +1,19 @@
+{
+    "docker_context_directory": "app",
+    "docker_file": "Dockerfile",
+    "region": "us-central1",
+    "terraform_directory": "terraform",
+    "environments": {
+        "dev": {
+            "workspaces": [
+                "default"
+            ]
+        }
+    },
+    "apps": {
+        "cohere-app": {
+            "service_name": "cohere-app",
+            "ecr_tag": "v1"
+        }
+    }
+}
