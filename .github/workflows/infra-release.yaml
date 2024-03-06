@@ -4,42 +4,43 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+  id-token: 'write'
 
+env:
+  TERRAFORM_VERSION: "1.7.4"
 jobs:
+  tfsec-checks:
+    name:  "Terraform Security Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run TFSec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          soft_fail: true
+          working_directory : ./terraform
+          format: junit
   terraform-release:
-    permissions:
-      contents: read
-      issues: read
-      checks: write
-      pull-requests: write
-      id-token: 'write'
     name: "Terraform Release"
     runs-on: ubuntu-latest
+    needs: [tfsec-checks]
     environment: Dev
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Terraform
-        env:
-          TERRAFORM_VERSION: "1.7.4"
-        run: |
-          tf_version=$TERRAFORM_VERSION
-          wget https://releases.hashicorp.com/terraform/"$tf_version"/terraform_"$tf_version"_linux_amd64.zip
-          
-          # Check if the terraform directory exists before deleting
-          if [ -d "/usr/local/bin/terraform" ]; then
-            sudo rm -rf /usr/local/bin/terraform
-          fi
-
-          # Check if the extracted directory exists before deleting
-          if [ -d "terraform_"$tf_version"_linux_amd64" ]; then
-            sudo rm -rf terraform_"$tf_version"_linux_amd64
-          fi
-
-          sudo unzip -o terraform_"$tf_version"_linux_amd64.zip -d terraform_install
-          sudo mv terraform_install/terraform /usr/local/bin/
-
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{env.TERRAFORM_VERSION}}
+        
       - name: Verify Terraform version
         run: terraform --version
         
