@@ -1,11 +1,11 @@
 name: Infra Release
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+    paths:
+      - 'terraform/**'
+      - 'ci/**'
 
 permissions:
   contents: read
@@ -52,14 +52,12 @@ jobs:
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
       - name: Terraform Plan
-        if: ${{ github.event_name == 'pull_request' }}
         run: |
           chmod +x ci/scripts/*.sh
           ci/scripts/generate_tfvars.sh terraform/environments/dev ${{ secrets.PROJECT_ID }} dev
           python3 ci/scripts/execute-terraform.py  --config ci/configs/pipeline-config.json --command plan --env dev
 
       - name: Terraform Apply
-        if: ${{ github.event_name != 'pull_request' }}
         run: |
           chmod +x ci/scripts/*.sh
           ci/scripts/generate_tfvars.sh terraform/environments/dev ${{ secrets.PROJECT_ID }} dev
