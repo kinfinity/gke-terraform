@@ -46,7 +46,7 @@ jobs:
             # Deploy App -> GKE
             - name: Deploy Cohere App
               run: |
-                helm upgrade cohere-app cohere-app --wait
+                helm upgrade cohere-app k8s/charts/cohere-app --wait
                 kubectl rollout status deployment/cohere-app
                 kubectl get services -o wide
               
