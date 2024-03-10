@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'manifests/**'
 
 env:
   IMAGE_TAG: $(echo ${{ github.sha }} | cut -c1-4)

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -eu
 
 # need to pass in environments
@@ -20,6 +19,7 @@ WORKSPACE=$4
 ENV_DIR="$(cd "${TERRAFORM_DIRECTORY}/environments/${ENV_NAME}/"; pwd -P)"
 pushd ${ENV_DIR} > /dev/null
 
+terraform fmt #-check -diff
 #  terraform init
 terraform init
 terraform validate
@@ -27,7 +27,7 @@ terraform workspace list
 terraform workspace select $WORKSPACE
 
 echo "configured workspace: ${ENV_NAME}/${WORKSPACE}"
-ls
+
 #  Run the provided command (e.g., plan or apply) with .tfvars
 if [[ $TERRAFORM_CMD == *"plan"* ]]; then
     terraform $TERRAFORM_CMD -var-file=variables.tfvars
