@@ -1,5 +1,6 @@
 name: Infra Release
 on:
+  workflow_dispatch: # On Demand Deploy
   pull_request:
     branches:
       - main
