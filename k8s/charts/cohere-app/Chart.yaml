@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cohere-app
+description: A Helm chart for deploying the cohere-app
+version: 0.1.0 # chart version
+type: application
+appVersion: "0.1.0" #app version

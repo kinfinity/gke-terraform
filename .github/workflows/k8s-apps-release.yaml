@@ -1,25 +1,17 @@
 name: K8s_Apps
 on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'manifests/**'
+  workflow_dispatch: # On Demand Deploy
 
-env:
-  IMAGE_TAG: $(echo ${{ github.sha }} | cut -c1-4)
-  NODE_VERSION: 20.11.1
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+  id-token: 'write'
 
 jobs:
     deploy:
         name: DeployApps
-        permissions:
-          contents: read
-          issues: read
-          checks: write
-          pull-requests: write
-          id-token: write
         runs-on: ubuntu-latest
         environment: Dev
         steps:
@@ -46,7 +38,18 @@ jobs:
                 kubectl config get-contexts
                 kubectl config current-context
 
-            - name: Deploy App w Database
+            # Install helm
+            - name: Install Helm
               run: |
-                kubectl apply -f manifests/cohere-app.yaml
-                kubectl apply -f manifests/postgress.yaml
+                curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+            
+            # Deploy App -> GKE
+            - name: Deploy Cohere App
+              run: |
+                helm upgrade cohere-app k8s/charts/cohere-app --wait
+                kubectl rollout status deployment/cohere-app
+                kubectl get services -o wide
+              
+            - name: Deploy Postgress Database
+              run: |
+                kubectl apply -f k8s/manifests/postgress.yaml
