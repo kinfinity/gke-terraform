@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'manifests/***'
+      - 'manifests/**'
 
 env:
   IMAGE_TAG: $(echo ${{ github.sha }} | cut -c1-4)

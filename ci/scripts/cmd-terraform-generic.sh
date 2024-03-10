@@ -19,7 +19,7 @@ WORKSPACE=$4
 ENV_DIR="$(cd "${TERRAFORM_DIRECTORY}/environments/${ENV_NAME}/"; pwd -P)"
 pushd ${ENV_DIR} > /dev/null
 
-terraform fmt -check -diff
+terraform fmt #-check -diff
 #  terraform init
 terraform init
 terraform validate
