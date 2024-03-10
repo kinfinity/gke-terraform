@@ -1,0 +1,72 @@
+labels:
+  app.kubernetes.io/managed-by: helm
+  app.kubernetes.io/name: cohere-app
+  meta.helm.sh/release-namespace: default
+  release: cohere-app
+  app: cohere-app
+
+selectorLabels:
+  app: cohere-app
+
+replicaCount: 3
+
+image:
+  repository: gcr.io/circular-genius-416217/cohere-app
+  tag: v1
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: gcr-json-key
+
+service:
+  name: cohere-app-service
+  type: LoadBalancer
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  path: /
+  pathType: Prefix
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
