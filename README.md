@@ -21,9 +21,13 @@ This project aims to deploy a Kubernetes cluster on Google Cloud Platform (GCP) 
 │   |       ├── state.tf
 │   |       └── versions.tf
 │   └── modules
-├── manifests/
-│   ├── cohere-app.yaml
-│   └── postgress.yaml
+│       ├── compute
+│       └── network
+├─ k8s
+│   ├── charts
+|   |   └── cohere-app
+│   └── manifests
+│       └── postgress.yaml
 ├── ci/
 │   ├── configs
 │   └── scripts
